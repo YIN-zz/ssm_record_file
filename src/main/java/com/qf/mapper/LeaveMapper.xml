@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qf.mapper.LeaveMapper">
+
+    <resultMap id="leaveMap" type="leave">
+        <id property="lid" column="lid"></id>
+        <result property="startDate" column="startdate"></result>
+        <result property="endDate" column="enddate"></result>
+        <result property="reason" column="reason"></result>
+        <result property="state" column="state"></result>
+        <association property="user" column="uid" javaType="user">
+            <id column="uid" property="uid"></id>
+            <result column="username" property="username"></result>
+            <result column="password" property="password"></result>
+        </association>
+    </resultMap>
+
+    <insert id="addLeave" parameterType="leave" useGeneratedKeys="true" keyProperty="lid">
+        insert into uleave(uid,startdate,enddate,reason)
+        values(#{user.uid},#{startDate},#{endDate},#{reason})
+    </insert>
+    <select id="leaveList" resultMap="leaveMap">
+        select uleave.reason,uleave.lid,uleave.uid,uleave.startdate,uleave.enddate,uleave.state,user.username,user.password from uleave,user where uleave.uid=user.uid and uleave.lid in
+        <foreach collection="list" item="value" separator="," open="(" close=")">
+            #{value}
+        </foreach>
+    </select>
+    <update id="updateLeave" parameterType="int">
+        update uleave set state = 1 where lid=#{lid};
+    </update>
+
+</mapper>

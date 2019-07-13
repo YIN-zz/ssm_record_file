@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+		  http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0">
+    <display-name>Archetype Created Web Application</display-name>
+
+
+    <!-- 配置spring ioc 中的root -->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:applicationContext_dao.xml,
+            classpath:applicationContext_service.xml,
+            classpath:applicationContext_shiro.xml
+        </param-value>
+    </context-param>
+
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+
+    <!-- post请求的文件编码配置 -->
+
+    <filter>
+        <filter-name>ft</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>ft</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+        <dispatcher>INCLUDE</dispatcher>
+    </filter-mapping>
+
+
+    <!-- spring mvc -->
+    <servlet>
+        <servlet-name>ds</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+
+        <!--设置服务器初始化加载配置-->
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:applicationContext_mvc.xml</param-value>
+
+        </init-param>
+        <!--设定服务器启动时加载配置文件，默认是第一次发送请求时创建-->
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ds</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
+
+    <filter>
+        <filter-name>HiddenHttpMethodFilter</filter-name>
+        <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>HiddenHttpMethodFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+   <!-- //配置过滤器代理对象，通过配置其属性，由spring容器产生shiro或其他过滤器对象-->
+    <filter>
+        <filter-name>shiroFilter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+      <!--设置目标过滤器的生命周期交给spring容器管理-->
+        <init-param>
+            <param-name>targetDilteLifecycle</param-name>
+            <param-value>true</param-value>
+        </init-param>
+       <!-- <init-param>
+            <param-name>targetBeanName</param-name>
+            <param-value>shiroFiltr</param-value>
+        </init-param>-->
+    </filter>
+    <filter-mapping>
+        <filter-name>shiroFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+</web-app>

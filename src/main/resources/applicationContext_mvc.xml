@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!--扫描controller包下的文件-->
+    <context:component-scan base-package="com.qf.controller"/>
+
+    <!--HandlerMapper和HandlerAdapter的结合写法-->
+    <mvc:annotation-driven/>
+
+    <!--不拦截静态资源-->
+    <mvc:default-servlet-handler/>
+
+    <!--视图解析器，添加前缀和后缀-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+
+    <!--上传文件的配置文件，id必须为multipartResolver-->
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!--defaultEncoding修改编码-->
+        <property name="defaultEncoding" value="utf-8"/>
+        <!--修改单次流上传的大小-->
+        <property name="maxUploadSizePerFile" value="#{1*1024*1024*10}"/>
+
+    </bean>
+    <!--使springmvc中的chiro注解有效-->
+   <!-- <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor" id="authorizationAttributeSourceAdvisor">
+        <property name="securityManager" ref="securityManager"></property>
+    </bean>-->
+</beans>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qf.mapper.ProfileMapper">
+
+    <select id="getProfileList" resultType="profile">
+        select * from profile
+    </select>
+
+    <select id="getProfileById" parameterType="int" resultType="profile">
+        select * from profile where id = #{id}
+    </select>
+
+    <update id="updateProfileById" parameterType="profile">
+        update profile
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="birthday != null">
+                birthday = #{birthday},
+            </if>
+            <if test="gender != null">
+                gender = #{gender},
+            </if>
+            <if test="career != null">
+                career = #{career},
+            </if>
+            <if test="address != null">
+                address = #{address},
+            </if>
+            <if test="mobile != null">
+                mobile = #{mobile},
+            </if>
+            <if test="picture != null">
+                picture = #{picture},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="delProfileById" parameterType="int">
+        delete from profile where id = #{id}
+    </delete>
+
+    <insert id="addProfile" parameterType="profile">
+        insert into profile(name,birthday,gender,career,address,mobile,picture)
+        value(#{name},#{birthday},#{gender},#{career},#{address},#{mobile},#{picture})
+    </insert>
+</mapper>

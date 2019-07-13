@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--引入jdbc配置文件，加载连接数据库的属性-->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+
+    <!--添加数据库连接池-->
+    <bean id="dateSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="${driver}"/>
+        <property name="jdbcUrl" value="${url}"/>
+        <property name="user" value="${user}"/>
+        <property name="password" value="${password}"/>
+    </bean>
+
+    <!-- 加载配置文件 ，并且初始化  sqlsessionFactoryBuilder/sqlsessionFactory/sqlsession-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dateSource"/>
+        <property name="configLocation" value="classpath:mybatis_config.xml"/>
+    </bean>
+
+    <!-- 扫描mapper.并将mapper放到 spring ioc容器中-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+
+    <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+
+    <!-- 找包！要求接口和配置文件命名相同,可以在需要使用时将接口交由IOC管理，进行DI注入-->
+    <property name="basePackage" value="com.qf.mapper"/>
+</bean>
+
+    <!--activiti配置 -->
+    <bean class="org.activiti.engine.impl.cfg.StandaloneProcessEngineConfiguration" id="processEngineConfiguration">
+        <property name="dataSource" ref="dateSource"></property>
+        <property name="databaseSchemaUpdate" value="true"></property>
+    </bean>
+    <bean class="org.activiti.spring.ProcessEngineFactoryBean" id="processEngine">
+        <property name="processEngineConfiguration" ref="processEngineConfiguration"></property>
+    </bean>
+    <bean class="org.activiti.engine.RepositoryService" id="repositoryService" factory-bean="processEngine" factory-method="getRepositoryService"></bean>
+    <bean class="org.activiti.engine.RuntimeService" id="runtimeService" factory-bean="processEngine" factory-method="getRuntimeService"></bean>
+    <bean class="org.activiti.engine.TaskService" id="taskService" factory-bean="processEngine" factory-method="getTaskService"></bean>
+    <bean class="org.activiti.engine.HistoryService" id="historyService" factory-bean="processEngine" factory-method="getHistoryService"></bean>
+
+
+
+</beans>

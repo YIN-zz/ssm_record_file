@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!--    扫描service 和 事务管理-->
+    <context:component-scan base-package="com.qf" use-default-filters="false">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+    </context:component-scan>
+
+
+
+    <!--配置事务管理器-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dateSource"/>
+    </bean>
+
+    <!--配置事务管理器中的扫描范围，设置其他属性
+    read-only 是否只读
+    propagation 隔离级别
+    timeout 响应时间
+    -->
+    <tx:advice transaction-manager="transactionManager" id="advice">
+        <tx:attributes>
+            <tx:method name="get*" read-only="true" propagation="SUPPORTS" timeout="10"/>
+            <tx:method name="*" propagation="REQUIRED" read-only="false" timeout="10"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <!--将advice交由IOC管理-->
+    <bean id="logAdvice" class="com.qf.advice.LogAdvice"/>
+
+    <aop:config>
+        <!--配置切点，需要具体到要扫描的类的上一级-->
+        <aop:pointcut id="pc" expression="execution(* com..service.impl.*Impl.*(..))"/>
+
+        <!--使用advisor引入第三方的增强，这里用于tx事务管理-->
+        <aop:advisor advice-ref="advice" pointcut-ref="pc"/>
+
+        <!--自定义增强，创建增强类，进行引入，throwing需要额外添加throwing属性-->
+        <aop:aspect ref="logAdvice">
+            <aop:before method="before" pointcut-ref="pc"/>
+            <aop:after method="after" pointcut-ref="pc"/>
+            <aop:after-throwing method="afterThrowing" throwing="throwable" pointcut-ref="pc"/>
+        </aop:aspect>
+
+    </aop:config>
+
+</beans>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <settings>
+        <!--在控制台输出sql语句-->
+        <setting name="logImpl" value="STDOUT_LOGGING"/>
+        <!-- 延迟加载开启  默认是关闭 -->
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <!-- 积极的延时加载  3.4.1 之前 true
+             true:获取对象的任意一个属性，都会触发嵌套查询！ 不合理
+             false:不积极 按需加载 只有在触发了=对应的属性才会触发对应的嵌套查询
+
+             最佳实践：lazyLoadingEnabled = true    aggressiveLazyLoading=false
+        -->
+        <setting name="aggressiveLazyLoading" value="false"/>
+    </settings>
+
+    <typeAliases>
+        <!--
+            类型别名是为 Java 类型设置一个短的名字。
+            它只和 XML 配置有关，存在的意义仅在于用来减少类完全限定名的冗余
+            扫描包下的类！起一个别名 默认是类名的手字母小写
+            这样 mapper.xml 可以使用别名进行类型引用
+            int -  java int
+
+            单独为某一个类起别名
+            <typeAlias type="com.itqf.pojo.User" alias="xiaohei" />-->
+        <package name="com.qf.pojo"/>
+    </typeAliases>
+
+    <plugins>
+        <plugin interceptor="com.github.pagehelper.PageHelper">
+            <property name="dialect" value="mysql"/>
+        </plugin>
+        <!--5.0版本pagehelper-->
+        <!-- <plugin interceptor="com.github.pagehelper.PageInterceptor">
+                <property name="helperDialect" value="mysql"/>
+        </plugin> -->
+    </plugins>
+
+
+
+</configuration>
